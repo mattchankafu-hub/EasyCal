@@ -9,8 +9,6 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         [x-cloak] { display: none !important; }
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col md:flex-row" x-data="app()" x-cloak>
@@ -36,7 +34,7 @@
             </nav>
         </div>
         <div class="hidden md:block p-4 text-[11px] text-slate-500 border-t border-slate-800">
-            自動記憶功能已啟用
+            點擊數字即可彈窗修改
         </div>
     </aside>
 
@@ -52,7 +50,7 @@
                 </button>
             </div>
 
-            <!-- 仿 Excel 表格 -->
+            <!-- 仿 Excel 表格 (點擊數字即彈窗) -->
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse border border-slate-300 text-sm text-center">
                     <thead>
@@ -71,22 +69,19 @@
                             <!-- L1 -->
                             <tr>
                                 <td class="border border-slate-300 font-semibold text-xs text-slate-500 bg-slate-50">L1</td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l1.c" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l1.t" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
-                                <!-- System Current 跨三行 (rowspan="3") -->
-                                <td class="border border-slate-300 p-0 bg-slate-50/50" rowspan="3">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.sys" @input="save()"
-                                           class="w-full h-32 text-center bg-transparent focus:outline-none focus:bg-indigo-50/50 font-bold text-indigo-700">
-                                </td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l1.c', '修改 L1 Current 數值')"
+                                    x-text="group.l1.c"></td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l1.t', '修改 L1 THD 數值')"
+                                    x-text="group.l1.t"></td>
+                                <!-- System Current 跨三行 -->
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-bold text-indigo-700 bg-slate-50/50 transition"
+                                    rowspan="3"
+                                    @click="openEdit(group, 'sys', '修改 System Current 數值')"
+                                    x-text="group.sys"></td>
                                 <td class="border border-slate-300 font-bold text-slate-900 bg-amber-50/40 px-2" 
                                     x-text="calc(group.l1.c, group.l1.t, group.sys)"></td>
-                                <!-- 刪除整組按鈕 (跨三行) -->
                                 <td class="border border-slate-300 bg-slate-50" rowspan="3">
                                     <button @click="removeGroup(group.id)" x-show="groups.length > 1" class="text-slate-400 hover:text-rose-500 text-xs p-1" title="刪除此組">✕</button>
                                 </td>
@@ -94,28 +89,24 @@
                             <!-- L2 -->
                             <tr>
                                 <td class="border border-slate-300 font-semibold text-xs text-slate-500 bg-slate-50">L2</td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l2.c" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l2.t" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l2.c', '修改 L2 Current 數值')"
+                                    x-text="group.l2.c"></td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l2.t', '修改 L2 THD 數值')"
+                                    x-text="group.l2.t"></td>
                                 <td class="border border-slate-300 font-bold text-slate-900 bg-amber-50/40 px-2" 
                                     x-text="calc(group.l2.c, group.l2.t, group.sys)"></td>
                             </tr>
                             <!-- L3 -->
                             <tr>
                                 <td class="border border-slate-300 font-semibold text-xs text-slate-500 bg-slate-50">L3</td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l3.c" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
-                                <td class="border border-slate-300 p-0">
-                                    <input type="number" step="any" inputmode="decimal" x-model.number="group.l3.t" @input="save()"
-                                           class="w-full h-11 text-center focus:outline-none focus:bg-indigo-50/50 font-medium">
-                                </td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l3.c', '修改 L3 Current 數值')"
+                                    x-text="group.l3.c"></td>
+                                <td class="border border-slate-300 p-3 cursor-pointer hover:bg-indigo-50 font-medium transition"
+                                    @click="openEdit(group, 'l3.t', '修改 L3 THD 數值')"
+                                    x-text="group.l3.t"></td>
                                 <td class="border border-slate-300 font-bold text-slate-900 bg-amber-50/40 px-2" 
                                     x-text="calc(group.l3.c, group.l3.t, group.sys)"></td>
                             </tr>
@@ -125,7 +116,7 @@
             </div>
 
             <div class="mt-3 text-xs text-slate-400">
-                計算公式：Final THD = (Current × THD) ÷ System Current
+                提示：隨時點擊表格中的任一數值即可彈出視窗修改。公式：Final THD = (Current × THD) ÷ System Current
             </div>
         </div>
 
@@ -136,10 +127,30 @@
 
     </main>
 
+    <!-- 彈出數值修改視窗 (Modal) -->
+    <div x-show="modalOpen" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
+        <div @click.outside="modalOpen = false" class="bg-white w-full max-w-sm rounded-2xl p-6 space-y-4 shadow-2xl border border-slate-200">
+            <h3 class="text-base font-bold text-slate-800" x-text="modalTitle"></h3>
+            <div>
+                <input type="number" step="any" inputmode="decimal" x-model.number="modalValue" 
+                       id="modalInput"
+                       class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-500 rounded-xl px-4 py-3 text-xl font-bold text-slate-800 focus:outline-none text-center"
+                       @keyup.enter="saveModalValue()">
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button @click="modalOpen = false" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-xl font-semibold text-xs transition">
+                    取消
+                </button>
+                <button @click="saveModalValue()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-semibold text-xs transition shadow-md shadow-indigo-600/20">
+                    確認修改
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function app() {
-            const STORAGE_KEY = 'simple_thd_cal_v1';
-            // 預設放入你圖片中的兩組數據
+            const STORAGE_KEY = 'simple_thd_cal_v2';
             const defaultGroups = [
                 {
                     id: 1,
@@ -163,6 +174,50 @@
             return {
                 tab: 'thd',
                 groups: saved,
+                
+                // 彈窗控制變數
+                modalOpen: false,
+                modalTitle: '',
+                modalValue: '',
+                activeGroup: null,
+                activeField: '',
+
+                openEdit(group, field, title) {
+                    this.activeGroup = group;
+                    this.activeField = field;
+                    this.modalTitle = title;
+
+                    // 取得目前數值
+                    if (field === 'sys') {
+                        this.modalValue = group.sys;
+                    } else {
+                        let parts = field.split('.'); // 例如 'l1.c' -> ['l1', 'c']
+                        this.modalValue = group[parts[0]][parts[1]];
+                    }
+
+                    this.modalOpen = true;
+
+                    // 自動聚焦並選取輸入框文字，方便直接輸入
+                    setTimeout(() => {
+                        const input = document.getElementById('modalInput');
+                        if (input) {
+                            input.focus();
+                            input.select();
+                        }
+                    }, 50);
+                },
+
+                saveModalValue() {
+                    const val = Number(this.modalValue);
+                    if (this.activeField === 'sys') {
+                        this.activeGroup.sys = isNaN(val) ? 0 : val;
+                    } else {
+                        let parts = this.activeField.split('.');
+                        this.activeGroup[parts[0]][parts[1]] = isNaN(val) ? 0 : val;
+                    }
+                    this.save();
+                    this.modalOpen = false;
+                },
 
                 calc(c, t, sys) {
                     const current = Number(c) || 0;
@@ -170,7 +225,6 @@
                     const sysCurrent = Number(sys) || 0;
                     if (sysCurrent === 0) return '-';
                     const res = (current * thd) / sysCurrent;
-                    // 顯示最多 6 位小數，並自動去掉尾端多餘的 0 (與 Excel 顯示一致)
                     return Number(res.toFixed(6));
                 },
 
